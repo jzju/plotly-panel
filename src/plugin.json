@@ -4,10 +4,12 @@
   "name": "Plotly",
   "id": "jj-plotly-panel",
   "info": {
-    "keywords": ["panel"],
+    "keywords": [
+      "panel"
+    ],
     "description": "",
     "author": {
-      "name": "Jj"
+      "name": "JJ"
     },
     "logos": {
       "small": "img/logo.svg",

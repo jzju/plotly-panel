@@ -1,24 +1,39 @@
 import React from 'react';
-import { PanelProps } from '@grafana/data';
-import { SimpleOptions } from 'types';
 import Plot from 'react-plotly.js';
+import { PanelProps } from '@grafana/data';
+import { useTheme2 } from '@grafana/ui';
+import { SimpleOptions } from 'types';
+import { DataFrame } from 'data-forge';
 
 interface Props extends PanelProps<SimpleOptions> {}
 
 export const SimplePanel: React.FC<Props> = ({ options, data, width, height, fieldConfig, id }) => {
-  var ds = data.series.map((x) => x.fields);
-  for (var i = 0; i < ds.length; i++) {
-    ds[i] = ds[i].map((x) => x.values);
+  try {
+    var theme = useTheme2();
+    var ds = [];
+    var df = [];
+    for (var i = 0; i < data.series.length; i++) {
+      var di = data.series[i];
+      var cols = {};
+      ds.push([]);
+      for (var j = 0; j < di.fields.length; j++) {
+        ds[i].push(di.fields[j].values);
+        cols[j] = ds[i][j];
+      }
+      df.push(new DataFrame({ columns: cols }));
+    }
+    var f = new Function('ds', 'df', options.script);
+    var pd = f(ds, df);
+    layout.font.color = theme.isDark ? 'lightgrey' : 'black';
+    return <Plot data={pd} layout={Object.assign(layout, { width: width, height: height })} config={config} />;
+  } catch (e: any) {
+    return <pre>{`${e.stack}`}</pre>;
   }
-  var f = new Function('ds', options.script);
-  var pd = f(ds);
-  return <Plot data={pd} layout={Object.assign(layout, { width: width, height: height })} />;
 };
 
 var layout = {
   font: {
     size: 16,
-    color: 'lightgrey',
   },
   xaxis: {
     tickangle: 25,
@@ -41,4 +56,12 @@ var layout = {
   },
   paper_bgcolor: 'rgba(0,0,0,0)',
   plot_bgcolor: 'rgba(0,0,0,0)',
+};
+
+var config = {
+  toImageButtonOptions: {
+    format: 'svg',
+    filename: 'plot',
+    scale: 1,
+  },
 };
