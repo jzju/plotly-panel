@@ -5,13 +5,13 @@ import { SimplePanel } from './components/SimplePanel';
 export const plugin = new PanelPlugin<SimpleOptions>(SimplePanel).setPanelOptions((builder) => {
   return builder
     .addTextInput({
-      path: 'conf',
-      name: 'Config',
+      path: 'script',
+      name: 'Script',
       description: '',
-      defaultValue: 'test',
+      defaultValue: 'console.log(ds)\nreturn [{ type: "bar", x: [0], y: [1] }];',
       settings: {
         useTextarea:true,
-        rows: 5,
+        rows: 10,
     }
     });
 });
